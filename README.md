@@ -22,6 +22,40 @@ A production-ready web application for analyzing sentiment in Arabic product rev
 - **Docker Support**: Fully containerized application for easy deployment
 - **Comprehensive Logging**: Detailed application logs for monitoring and debugging
 
+  ## 🏗️ Architecture & Internal Networking
+
+The application is built using a containerized microservices architecture orchestrated by Docker Compose. It consists of three decoupled services communicating over an internal bridge network.
+
+```mermaid
+graph TD
+    %% Define Styles
+    classDef frontend fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff
+    classDef backend fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    classDef db fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff
+    classDef external fill:#6b7280,stroke:#374151,stroke-width:2px,color:#fff,stroke-dasharray: 5 5
+
+    %% Nodes
+    User((User / Browser)):::external
+    HostHost([Host Machine]):::external
+    
+    subgraph Docker Internal Network
+        FrontEnd["🌐 Frontend (React/Vite)<br>arabic_sentiment_frontend"]:::frontend
+        BackEnd["⚙️ Backend (FastAPI)<br>arabic_sentiment_backend"]:::backend
+        DB[("🗄️ Database (PostgreSQL)<br>arabic_sentiment_db")]:::db
+    end
+
+    %% External Connections
+    User -- "HTTP :5173" --> HostHost
+    User -- "HTTP :8000" --> HostHost
+    HostHost -- "Port Forward" --> FrontEnd
+    HostHost -- "Port Forward" --> BackEnd
+    HostHost -. "Optional :5432" .-> DB
+
+    %% Internal Connections
+    FrontEnd -- "REST API Calls<br>(via User Browser)" --> BackEnd
+    BackEnd -- "Internal TCP :5432" --> DB
+```
+
 ## 🚀 Quick Start
 
 ### Prerequisites
