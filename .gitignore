@@ -9,3 +9,4 @@ venv/
 predictions.db
 logs/*.log
 ShowCase.mkv
+notebooks/
